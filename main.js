@@ -1,13 +1,42 @@
 
 const readline = require('readline');
 
-console.log("CORE Quiz");
+const figlet = require('figlet');
+const chalk = require('chalk');
 
+
+const colortext = (msg,color) => {
+	if (typeof color !== "undefined") {
+		msg = chalk[color].bold(msg);
+	}
+	return msg;
+};
+
+const log = (msg, color) => {
+	console.log(colortext(msg,color));
+};
+
+const biglog = (msg, color) => {
+	log(figlet.textSync(msg, {horizontalLayout: 'full'}), color);
+};
+
+const errorlog = (errmsg) => {
+	console.log(`${colortext("Error",red)}: ${colortext(colortext(errmsg,"red"), "bgYellowBright")}`);
+};
+
+
+// Hello message 
+biglog('CORE Quiz', 'green');
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  prompt: 'quiz> '
+  prompt: 'quiz> ',
+  completer: (line) => {
+  	const completions = 'h help add delete edit list p play credits q quit'.split(' ');
+  	const hits = completions.filter((c) => c.startsWith(line));
+  	return [hits.length ? hits : completions, line];
+  }
 });
 
 rl.prompt();
