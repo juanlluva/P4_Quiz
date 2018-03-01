@@ -1,28 +1,9 @@
 
 const readline = require('readline');
 
-const figlet = require('figlet');
-const chalk = require('chalk');
+const {log,biglog,errorlog,colortext} = require('./out');
 
-
-const colortext = (msg,color) => {
-	if (typeof color !== "undefined") {
-		msg = chalk[color].bold(msg);
-	}
-	return msg;
-};
-
-const log = (msg, color) => {
-	console.log(colortext(msg,color));
-};
-
-const biglog = (msg, color) => {
-	log(figlet.textSync(msg, {horizontalLayout: 'full'}), color);
-};
-
-const errorlog = (errmsg) => {
-	console.log(`${colortext("Error",red)}: ${colortext(colortext(errmsg,"red"), "bgYellowBright")}`);
-};
+const funs = require("./funs");
 
 
 // Hello message 
@@ -31,7 +12,7 @@ biglog('CORE Quiz', 'green');
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
-  prompt: 'quiz> ',
+  prompt: colortext('quiz> ','blue'),
   completer: (line) => {
   	const completions = 'h help add delete edit list p play credits q quit'.split(' ');
   	const hits = completions.filter((c) => c.startsWith(line));
@@ -48,111 +29,49 @@ rl.on('line', (line) => {
 
 	switch (cmd) {
 	  	case '': 
-	  		rl.prompt();
+	  		rl.prompt(rl);
 	  		break;
 	    case 'h':
 	    case 'help':
-	    	helpfun();
+	    	funs.helpfun(rl);
 			break;
 	    case 'q':
 	    case 'quit':
-	    	quitfun();
+	    	funs.quitfun(rl);
 	    	break;
 	    case 'list' :
-	    	listfun();
+	    	funs.listfun(rl);
 	    	break;
 	    case 'show' : 
-	    	showfun(args[1]);
+	    	funs.showfun(rl, args[1]);
 	    	break;
 	    case 'add':
-	    	addfun();
+	    	funs.addfun(rl);
 	    	break;
 	    case 'delete':
-	    	deletefun(args[1]);
+	    	funs.deletefun(rl, args[1]);
 	    	break;
 	    case 'edit':
-	    	editfun(args[1]);
+	    	funs.editfun(rl, args[1]);
 	    	break;
 	    case 'test':
-			testfun(args[1]);
+			funs.testfun(rl, args[1]);
 			break;
 		case 'p':
 		case'play':
-			playfun();
+			funs.playfun(rl);
 			break;
 		case 'credits':
-			creditsfun();
+			funs.creditsfun(rl);
 			break;
 	    default:
-			console.log(`Comando desconocido: '${cmd}'`);
-			console.log("Use help para ver todos los comandos disponibles.");
+			log(`Comando desconocido: '${colortext(cmd,'red')}'`);
+			log(`Use ${colortext('help','green')} para ver todos los comandos disponibles.`);
 			rl.prompt();
 			break;
 	}
 })
 .on('close', () => {
-  console.log('Adios!');
+  log('Adios!');
   process.exit(0);
 });
-
-
-const helpfun = () => {
-	console.log("Comandos: ");
-	console.log("  h|help - Muestra esta ayuda.");
-	console.log("  list - Listar los quizzes existentes.");
-	console.log("  show <id> - Muestra la pregunta y la respuesta el quiz indicado.");
-	console.log("  add - Añadir un nuevo quiz interactivamente.");
-	console.log("  delete <id> - Borrar el quiz indicado.");
-	console.log("  edit <id> - Editar el quiz indicado.");
-	console.log("  test <id> - Probar el quiz indicado. ");
-	console.log("  p|play - Jugar a preguntar aleatoriamente todos los quizzes.");
-	console.log("  credits - Créditos. ");
-	console.log("  q|quit - Salir del programa.");
-	rl.prompt();
-}
-
-const quitfun = () => {
-	rl.close();
-	rl.prompt();
-}
-
-const showfun = () => {
-	console.log("Muestra la pregunta y la respuesta el quiz indicado.");
-	rl.prompt();
-}
-
-const addfun = () => {
-	console.log("Añadir un nuevo quiz interactivamente.");
-	rl.prompt();
-}
-
-const deletefun = id => {
-	console.log("  delete <id> - Borrar el quiz indicado.");
-	rl.prompt();
-}
-
-const editfun = id => {
-	console.log("  edit <id> - Editar el quiz indicado.");
-	rl.prompt();
-}
-
-const testfun = id => {
-	console.log("  test <id> - Probar el quiz indicado. ");
-	rl.prompt();
-}
-
-const creditsfun = () => {
-	console.log("Autores de la practica:");
-	console.log("Juan Lluva");
-	rl.prompt();
-}
-
-const playfun = () => {
-	console.log("  p|play - Jugar a preguntar aleatoriamente todos los quizzes.");
-	rl.prompt();
-}
-
-const listfun = () => {
-	console.log("Listar los quizzes existentes.");
-	rl.prompt();
-}
