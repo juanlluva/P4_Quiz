@@ -191,7 +191,8 @@ exports.playfun = rl => {
 			.then(quiz => {
 				if(!quiz) {
 					log('No hay nada más que preguntar. ');
-                    log(`Fin del juego. Aciertos: ${score}`);
+                    log(`Fin del juego.`);
+                    rl.prompt();
 					return;
 				}
 
@@ -205,15 +206,18 @@ exports.playfun = rl => {
                         } else {
                             log('INCORRECTO.');
                             log(`Fin del juego. Aciertos: ${score}`);
+                            rl.prompt();
                         }
                     });
 			})
             .catch(error => {
                 errorlog(error.message);
-            })
+            });
+		/*
             .then(() => {
                 rl.prompt();
             });
+            */
     };
     playloop();
 };
@@ -228,6 +232,7 @@ exports.listfun = rl => {
 			errorlog(error.message);
 		})
 		.then(() => {
+            log(`Aciertos: ${score}`);
 			rl.prompt();
 		});
 };
