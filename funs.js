@@ -232,7 +232,6 @@ exports.listfun = rl => {
 			errorlog(error.message);
 		})
 		.then(() => {
-            log(`Aciertos: ${score}`);
 			rl.prompt();
 		});
 };
