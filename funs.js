@@ -174,54 +174,57 @@ exports.creditsfun = rl => {
 	rl.prompt();
 };
 
+
+
 exports.playfun = rl => {
-	let score = 0;
-	let alreadyAsked = [];
-	const playloop = () => {
-		const whereOpt = {'id' : {[Sequelize.Op.notIn]: alreadyAsked}};
-		return models.quiz.count({where: whereOpt})
-			.then(function (count) {
-				return models.quiz.findAll({
-					where: whereOpt,
-					offset: Math.floor(Math.random() * count),
-					limit: 1
-				});
-            })
-			.then(quizzes => quizzes[0])
-			.then(quiz => {
-				if(!quiz) {
-					log('No hay nada más que preguntar. ');
-                    log(`Fin del juego.`);
+
+    let score = 0;
+
+    let toBePlayed = [];
+
+    models.quiz.findAll()
+        .each(quiz => {
+            toBePlayed.push(quiz);
+        })
+
+        .then(() => {
+            playOne();
+        })
+
+
+    const playOne = () => {
+
+        if(toBePlayed.length <= 0) {
+            console.log('No hay mas preguntas.');
+            log(`Fin del juego. Aciertos: ${score}`);
+            return;
+        } else{
+            let pos = Math.floor(Math.random()*toBePlayed.length);
+            let quiz = toBePlayed[pos];
+            toBePlayed.splice(pos,1);
+
+            return makeQuestion(rl, `${quiz.question} ? `)
+                .then(answer => {
+                    if(answer.toLowerCase().trim() == quiz.answer.toLowerCase().trim()) {
+                        log(`CORRECTO - Lleva ${++score} aciertos`);
+                        playOne();
+                    } else {
+                        log('INCORRECTO.');
+                        log(`Fin del juego. Aciertos: ${score}`);
+                    }
+                })
+
+                .catch(error => {
+                    errorlog(error.message);
+                })
+                .then(() => {
+
                     rl.prompt();
-					return;
-				}
-
-				alreadyAsked.push(quiz.id);
-
-				return makeQuestion(rl, `${quiz.question} ? `)
-                    .then(a => {
-                        if (a.toLowerCase().trim() === quiz.answer.toLowerCase().trim()){
-                            log(`CORRECTO - Lleva ${++score} aciertos`);
-                            playloop();
-                        } else {
-                            log('INCORRECTO.');
-                            log(`Fin del juego. Aciertos: ${score}`);
-                            rl.prompt();
-                        }
-                    });
-			})
-            .catch(error => {
-                errorlog(error.message);
-            });
-		/*
-            .then(() => {
-                rl.prompt();
-            });
-            */
+                });
+        }
     };
-    playloop();
-};
 
+};
 
 exports.listfun = rl => {
 	models.quiz.findAll()
