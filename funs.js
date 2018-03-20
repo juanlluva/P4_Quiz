@@ -83,7 +83,7 @@ exports.addfun = (rl, socket) => {
         })
 		.catch(Sequelize.ValidationError, error => {
 			errorlog(socket, 'El quiz es erroneo: ');
-			error.errors.forEach(({message}) => errorlog(message));
+			error.errors.forEach(({message}) => errorlog(socket, message));
 		})
 		.catch(error => {
 			errorlog(socket, error.message);
@@ -131,7 +131,7 @@ exports.editfun = (rl, id, socket) => {
 		})
 		.catch(Sequelize.ValidationError, error => {
 			errorlog(socket, 'El quiz es erroneo: ');
-			error.errors.forEach(({message}) => errorlog(message));
+			error.errors.forEach(({message}) => errorlog(socket, message));
 		})
 		.catch(error => {
 			errorlog(socket, error.message);
@@ -159,7 +159,7 @@ exports.testfun = (rl, id, socket) => {
 		})
 		.catch(Sequelize.ValidationError, error => {
             errorlog(socket, 'El quiz es erroneo: ');
-            error.errors.forEach(({message}) => errorlog(message));
+            error.errors.forEach(({message}) => errorlog(socket, message));
         })
         .catch(error => {
             errorlog(socket, error.message);
@@ -208,11 +208,11 @@ exports.playfun = (rl, socket) => {
             return makeQuestion(rl, `${quiz.question} ? `)
                 .then(answer => {
                     if(answer.toLowerCase().trim() == quiz.answer.toLowerCase().trim()) {
-                        log(`socket, CORRECTO - Lleva ${++score} aciertos`,'yellow');
+                        log(socket, `CORRECTO - Lleva ${++score} aciertos`,'yellow');
                         playOne();
                     } else {
                         log(socket, 'INCORRECTO.', 'yellow');
-                        log(`Fin del juego. Aciertos: ${score}`,'yellow');
+                        log(socket, `Fin del juego. Aciertos: ${score}`,'yellow');
                     }
                 })
 
